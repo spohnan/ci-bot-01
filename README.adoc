@@ -1,7 +1,8 @@
 [options="header"]
 |===
-|CI Build and Tests|Static Analysis|Coverage|Chat
+|Continuous Integration|Static Analysis|Coverage|Chat
 |image:https://travis-ci.org/spohnan/ci-bot-01.svg?branch=master["Build Status", link="https://travis-ci.org/spohnan/ci-bot-01", window="_blank"]|image:http://goreportcard.com/badge/spohnan/ci-bot-01["Go Report Card",link="http://goreportcard.com/report/spohnan/ci-bot-01", window="_blank"]|image:https://coveralls.io/repos/spohnan/ci-bot-01/badge.svg?branch=master&service=github["Coverage Status", link="https://coveralls.io/github/spohnan/ci-bot-01?branch=master", window="_blank"]|image:https://badges.gitter.im/Join%20Chat.svg[link="https://gitter.im/spohnan/ci-bot-01?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge", window="_blank"]
 |===
 
 === Automated GitHub Interactions
+
