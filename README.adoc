@@ -1,5 +1,7 @@
+[options="header"]
 |===
-|image:http://goreportcard.com/badge/spohnan/ci-bot-01["Go Report Card",link="http://goreportcard.com/report/spohnan/ci-bot-01", window="_blank"]|image:https://travis-ci.org/spohnan/ci-bot-01.svg?branch=master["Build Status", link="https://travis-ci.org/spohnan/ci-bot-01", window="_blank"]
+|CI Build and Tests|Static Analysis
+|image:https://travis-ci.org/spohnan/ci-bot-01.svg?branch=master["Build Status", link="https://travis-ci.org/spohnan/ci-bot-01", window="_blank"]|image:http://goreportcard.com/badge/spohnan/ci-bot-01["Go Report Card",link="http://goreportcard.com/report/spohnan/ci-bot-01", window="_blank"]
 |===
 
 === Automated GitHub Interactions
