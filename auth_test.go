@@ -1,4 +1,4 @@
-package ci_bot
+package bot
 
 import (
 	"testing"
