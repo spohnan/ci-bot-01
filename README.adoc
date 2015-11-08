@@ -1,1 +1,5 @@
-===== Automated GitHub Interaction
+image:http://goreportcard.com/badge/spohnan/ci-bot-01["Go Report Card",link="http://goreportcard.com/report/spohnan/ci-bot-01"]
+
+==== ci-bot-01
+
+Automated GitHub Interaction
