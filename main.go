@@ -7,13 +7,12 @@ import (
 )
 
 func init() {
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", mainHandler)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func mainHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: Add check of source IP
 	// https://help.github.com/articles/what-ip-addresses-does-github-use-that-i-should-whitelist/
 	// https://groups.google.com/forum/embed/#!topic/golang-nuts/Usu-B5rcCJs
-
-	fmt.Fprint(w, "<html><head/><body>Hello, world!<br /><br /></body></html>")
+	fmt.Fprintf(w, "Method %s - URI %s - %s", r.Method, r.RequestURI, r.RemoteAddr)
 }
