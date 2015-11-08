@@ -3,8 +3,6 @@ package bot
 
 import (
 	"fmt"
-	"net"
-	"net/http"
 )
 
 func init() {
