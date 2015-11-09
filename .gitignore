@@ -23,3 +23,6 @@ _testmain.go
 *.test
 *.prof
 *.out
+
+# app.yaml may contain sensitive env vars
+app.yaml
