@@ -18,20 +18,21 @@ func IsRequestAuthorized(addr string) bool {
 		return false
 	}
 
-	r := csv.NewReader(strings.NewReader(wl))
-	records, err := r.ReadAll()
+	wlRecords := csv.NewReader(strings.NewReader(wl))
+	addrOK, err := wlRecords.ReadAll()
 	if err != nil {
 		log.Println(err)
 	}
 
-	for _, it := range records {
-
-		// Test to see if the IP addr is part of an allowed CIDR
-		// range or if it's a direct match to a white listed address
-		if isRange(it) && isAddrInCIDR(addr, it) || addr == it {
-			return true
+	for records := range addrOK {
+		r := addrOK[records]
+		for i := 0; i < len(r); i++ {
+			// Test to see if the IP addr is part of an allowed CIDR
+			// range or if it's a direct match to a white listed address
+			if isRange(r[i]) && isAddrInCIDR(addr, r[i]) || addr == r[i] {
+				return true
+			}
 		}
-
 	}
 
 	return false
