@@ -22,7 +22,7 @@ var testdata = []item{
 
 func TestCIDRMatch(t *testing.T) {
 	for _, it := range testdata {
-		if IsAddrInCIDR(it.addr, it.cidr) != it.matches {
+		if isAddrInCIDR(it.addr, it.cidr) != it.matches {
 			t.Fatalf("%s in %s should be %t", it.addr, it.cidr, it.matches)
 		}
 	}

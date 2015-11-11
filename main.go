@@ -11,8 +11,11 @@ func init() {
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: Add check of source IP
-	// https://help.github.com/articles/what-ip-addresses-does-github-use-that-i-should-whitelist/
-	// https://groups.google.com/forum/embed/#!topic/golang-nuts/Usu-B5rcCJs
-	fmt.Fprintf(w, "Method %s - URI %s - %s", r.Method, r.RequestURI, r.RemoteAddr)
+
+	if IsRequestAuthorized(r.RemoteAddr) {
+		fmt.Fprintf(w, "Method %s - URI %s - %s", r.Method, r.RequestURI, r.RemoteAddr)
+	} else {
+		w.WriteHeader(http.StatusForbidden)
+	}
+
 }

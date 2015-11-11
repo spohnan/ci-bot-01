@@ -2,11 +2,50 @@
 package bot
 
 import (
+	"encoding/csv"
+	"log"
 	"net"
+	"os"
+	"strings"
 )
 
-// IsAddrInCIDR checks to see if a given IP is within a CIDR block
-func IsAddrInCIDR(addr string, cidr string) bool {
+// IsRequestAuthorized checks to see if the requesting IP address
+// has been allowed explicitly or as part of a CIDR range
+func IsRequestAuthorized(addr string) bool {
+
+	wl := os.Getenv("CI_BOT_IP_WHITELIST")
+	if wl == "" {
+		return false
+	}
+
+	r := csv.NewReader(strings.NewReader(wl))
+	records, err := r.ReadAll()
+	if err != nil {
+		log.Println(err)
+	}
+
+	for _, it := range records {
+
+		// Test to see if the IP addr is part of an allowed CIDR
+		// range or if it's a direct match to a white listed address
+		if isRange(it) && isAddrInCIDR(addr, it) || addr == it {
+			return true
+		}
+
+	}
+
+	return false
+
+}
+
+// isRange looks for a / character to see if it's a CIDR notation
+// range of IPs
+func isRange(addr string) bool {
+	return strings.ContainsRune(addr, '/')
+}
+
+// isAddrInCIDR checks to see if a given IP is within a CIDR block
+func isAddrInCIDR(addr string, cidr string) bool {
 
 	ip := net.ParseIP(addr)
 	if ip == nil {
