@@ -3,7 +3,6 @@ package bot
 
 import (
 	"encoding/csv"
-	"log"
 	"net"
 	"os"
 	"strings"
@@ -19,10 +18,7 @@ func IsRequestAuthorized(addr string) bool {
 	}
 
 	wlRecords := csv.NewReader(strings.NewReader(wl))
-	addrOK, err := wlRecords.ReadAll()
-	if err != nil {
-		log.Println(err)
-	}
+	addrOK, _ := wlRecords.ReadAll()
 
 	for records := range addrOK {
 		r := addrOK[records]
