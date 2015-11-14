@@ -18,6 +18,7 @@ var testdata = []item{
 	{"192.168.1.67", "not_a_cidr", false},
 	{"", "0.0.0.0/0", false},
 	{"192.168.1.67", "", false},
+	{"", "", false},
 }
 
 func TestCIDRMatch(t *testing.T) {
