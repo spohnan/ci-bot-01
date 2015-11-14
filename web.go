@@ -4,6 +4,8 @@ package bot
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
@@ -23,10 +25,22 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func webHookHandler(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
 	body := make([]byte, r.ContentLength)
 	r.Body.Read(body)
-	log.Infof(c, "%s", string(body))
+
+	if isLoggingEnabled() {
+		c := appengine.NewContext(r)
+		log.Infof(c, "%s", string(body))
+	}
+
+}
+
+func isLoggingEnabled() bool {
+	b, err := strconv.ParseBool(os.Getenv("ENABLE_GAE_LOGGING"))
+	if err != nil {
+		return false
+	}
+	return b
 }
 
 func authWrapper(h http.HandlerFunc) http.HandlerFunc {

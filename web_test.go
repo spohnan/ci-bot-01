@@ -76,6 +76,15 @@ func TestDeniedNoWhitelist(t *testing.T) {
 	}
 }
 
+func TestIsLoggingEnabled(t *testing.T) {
+	defer cleanup()
+	os.Setenv("ENABLE_GAE_LOGGING", "true")
+	if isLoggingEnabled() != true {
+		t.Error("isLoggingEnabled should have returned true")
+	}
+}
+
 func cleanup() {
 	os.Unsetenv("CI_BOT_IP_WHITELIST")
+	os.Unsetenv("ENABLE_GAE_LOGGING")
 }
