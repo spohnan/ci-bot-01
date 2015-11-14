@@ -3,8 +3,10 @@ package bot
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/log"
 )
 
 const (
@@ -21,9 +23,10 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func webHookHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
 	body := make([]byte, r.ContentLength)
 	r.Body.Read(body)
-	log.Printf("%s", string(body))
+	log.Infof(c, "%s", string(body))
 }
 
 func authWrapper(h http.HandlerFunc) http.HandlerFunc {
