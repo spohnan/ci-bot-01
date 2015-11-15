@@ -4,8 +4,6 @@ package bot
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/spohnan/ci-bot-01/paas"
 )
 
 const (
@@ -23,9 +21,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func webHookHandler(w http.ResponseWriter, r *http.Request) {
-	body := make([]byte, r.ContentLength)
-	r.Body.Read(body)
-	paas.PaasCtx.Log(r, "%s", string(body))
+	WebHookRouter(r)
 }
 
 func authWrapper(h http.HandlerFunc) http.HandlerFunc {

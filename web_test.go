@@ -1,8 +1,6 @@
 package bot
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -71,25 +69,6 @@ func TestDeniedNoWhitelist(t *testing.T) {
 			t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
 		}
 	})
-}
-
-func TestWebhookResponse(t *testing.T) {
-	var webhookJSON interface{}
-	err := json.Unmarshal(getWebhookExampleFileContent("ping.json"), &webhookJSON)
-	if err != nil {
-		t.Errorf("Webhook parsing error: %s", err)
-	}
-	wh := webhookJSON.(map[string]interface{})
-	t.Log(wh["zen"])
-}
-
-// A helper function to retrieve the contents of test data files
-func getWebhookExampleFileContent(filename string) (content []byte) {
-	content, err := ioutil.ReadFile("./.hook-examples/" + filename)
-	if err != nil {
-		return
-	}
-	return content
 }
 
 // A helper function to do the setup and teardown work within a web test

@@ -11,4 +11,3 @@ handlers:
 env_variables:
   CI_BOT_GITHUB_KEY:   'replace_with_your_key'
   CI_BOT_IP_WHITELIST: '0.0.0.0/0,::1'
-  ENABLE_GAE_LOGGING:  false
