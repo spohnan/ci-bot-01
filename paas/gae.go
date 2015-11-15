@@ -10,14 +10,17 @@ import (
 	"google.golang.org/appengine/log"
 )
 
+// GoogleAppEngine implements all of our Paas interface methds
 type GoogleAppEngine struct {
 	Name string
 }
 
+// String returns the name of this Paas implementation
 func (gae GoogleAppEngine) String() string {
 	return gae.Name
 }
 
+// Log uses GAE internal API to send messages to their logger
 // TODO: Pass along a severity code, everything is info for now
 func (gae GoogleAppEngine) Log(r *http.Request, format string, args ...interface{}) {
 	if isLoggingEnabled() {

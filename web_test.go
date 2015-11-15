@@ -74,12 +74,12 @@ func TestDeniedNoWhitelist(t *testing.T) {
 }
 
 func TestWebhookResponse(t *testing.T) {
-	var webhookJson interface{}
-	err := json.Unmarshal(getWebhookExampleFileContent("ping.json"), &webhookJson)
+	var webhookJSON interface{}
+	err := json.Unmarshal(getWebhookExampleFileContent("ping.json"), &webhookJSON)
 	if err != nil {
 		t.Errorf("Webhook parsing error: %s", err)
 	}
-	wh := webhookJson.(map[string]interface{})
+	wh := webhookJSON.(map[string]interface{})
 	t.Log(wh["zen"])
 }
 

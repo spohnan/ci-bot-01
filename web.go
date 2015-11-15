@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	// A really simple value to indicate the health of the application
 	HealthOK = "OK"
 )
 
