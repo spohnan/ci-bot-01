@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,77 +16,91 @@ const (
 )
 
 func TestHelthCheck(t *testing.T) {
-	defer cleanup()
 	os.Setenv("CI_BOT_IP_WHITELIST", allowedIP)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", authWrapper(healthHandler))
-	writer := httptest.NewRecorder()
-	request, _ := http.NewRequest("GET", "/health", nil)
-	request.RemoteAddr = allowedIP
-	mux.ServeHTTP(writer, request)
-	if writer.Code != http.StatusOK {
-		t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
-	}
-	if writer.Body.String() != HealthOK {
-		t.Errorf("Response to /health was %s and should be %s", writer.Body.String(), HealthOK)
-	}
+	withWebTestContext(func(mux *http.ServeMux, writer *httptest.ResponseRecorder) {
+		mux.HandleFunc("/health", authWrapper(healthHandler))
+		request, _ := http.NewRequest("GET", "/health", nil)
+		request.RemoteAddr = allowedIP
+		mux.ServeHTTP(writer, request)
+		if writer.Code != http.StatusOK {
+			t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
+		}
+		if writer.Body.String() != HealthOK {
+			t.Errorf("Response to /health was %s and should be %s", writer.Body.String(), HealthOK)
+		}
+	})
 }
 
 func TestAllowedRemoteIP(t *testing.T) {
-	defer cleanup()
 	os.Setenv("CI_BOT_IP_WHITELIST", allowedIP)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/webhook", authWrapper(webHookHandler))
-	writer := httptest.NewRecorder()
-	json := strings.NewReader(`{"foo","bar"}`)
-	request, _ := http.NewRequest("POST", "/webhook", json)
-	request.RemoteAddr = allowedIP
-	mux.ServeHTTP(writer, request)
-	if writer.Code != http.StatusOK {
-		t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
-	}
+	withWebTestContext(func(mux *http.ServeMux, writer *httptest.ResponseRecorder) {
+		mux.HandleFunc("/webhook", authWrapper(webHookHandler))
+		json := strings.NewReader(`{"foo","bar"}`)
+		request, _ := http.NewRequest("POST", "/webhook", json)
+		request.RemoteAddr = allowedIP
+		mux.ServeHTTP(writer, request)
+		if writer.Code != http.StatusOK {
+			t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
+		}
+	})
 }
 
 func TestDeniedRemoteIP(t *testing.T) {
-	defer cleanup()
 	os.Setenv("CI_BOT_IP_WHITELIST", allowedIP)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", authWrapper(webHookHandler))
-	writer := httptest.NewRecorder()
-	request, _ := http.NewRequest("GET", "/health", nil)
-	request.RemoteAddr = deniedIP
-	mux.ServeHTTP(writer, request)
-	if writer.Code != http.StatusForbidden {
-		t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
-	}
+	withWebTestContext(func(mux *http.ServeMux, writer *httptest.ResponseRecorder) {
+		mux.HandleFunc("/health", authWrapper(webHookHandler))
+		request, _ := http.NewRequest("GET", "/health", nil)
+		request.RemoteAddr = deniedIP
+		mux.ServeHTTP(writer, request)
+		if writer.Code != http.StatusForbidden {
+			t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
+		}
+	})
 }
 
 func TestDeniedNoWhitelist(t *testing.T) {
-	defer cleanup()
+	withWebTestContext(func(mux *http.ServeMux, writer *httptest.ResponseRecorder) {
+		mux.HandleFunc("/health", authWrapper(webHookHandler))
+		request, _ := http.NewRequest("GET", "/health", nil)
+		request.RemoteAddr = deniedIP
+		mux.ServeHTTP(writer, request)
+		if writer.Code != http.StatusForbidden {
+			t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
+		}
+	})
+}
 
+func TestWebhookResponse(t *testing.T) {
+	var webhookJson interface{}
+	err := json.Unmarshal(getWebhookExampleFileContent("ping.json"), &webhookJson)
+	if err != nil {
+		t.Errorf("Webhook parsing error: %s", err)
+	}
+	wh := webhookJson.(map[string]interface{})
+	t.Log(wh["zen"])
+}
+
+// A helper function to retrieve the contents of test data files
+func getWebhookExampleFileContent(filename string) (content []byte) {
+	content, err := ioutil.ReadFile("./.hook-examples/" + filename)
+	if err != nil {
+		return
+	}
+	return content
+}
+
+// A helper function to do the setup and teardown work within a web test
+func withWebTestContext(fn func(mux *http.ServeMux, writer *httptest.ResponseRecorder)) {
+	defer cleanup()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", authWrapper(webHookHandler))
 	writer := httptest.NewRecorder()
-	request, _ := http.NewRequest("GET", "/health", nil)
-	request.RemoteAddr = deniedIP
-	mux.ServeHTTP(writer, request)
-	if writer.Code != http.StatusForbidden {
-		t.Errorf("Response code is %v for address %s", writer.Code, request.RemoteAddr)
-	}
+	fn(mux, writer)
 }
 
-func TestIsLoggingEnabled(t *testing.T) {
-	defer cleanup()
-	os.Setenv("ENABLE_GAE_LOGGING", "true")
-	if isLoggingEnabled() != true {
-		t.Error("isLoggingEnabled should have returned true")
-	}
-}
-
+// Reset the environment after each test
 func cleanup() {
 	os.Unsetenv("CI_BOT_IP_WHITELIST")
-	os.Unsetenv("ENABLE_GAE_LOGGING")
 }

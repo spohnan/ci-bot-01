@@ -4,11 +4,8 @@ package bot
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"strconv"
 
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
+	"github.com/spohnan/ci-bot-01/paas"
 )
 
 const (
@@ -27,20 +24,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 func webHookHandler(w http.ResponseWriter, r *http.Request) {
 	body := make([]byte, r.ContentLength)
 	r.Body.Read(body)
-
-	if isLoggingEnabled() {
-		c := appengine.NewContext(r)
-		log.Infof(c, "%s", string(body))
-	}
-
-}
-
-func isLoggingEnabled() bool {
-	b, err := strconv.ParseBool(os.Getenv("ENABLE_GAE_LOGGING"))
-	if err != nil {
-		return false
-	}
-	return b
+	paas.PaasCtx.Log(r, "%s", string(body))
 }
 
 func authWrapper(h http.HandlerFunc) http.HandlerFunc {

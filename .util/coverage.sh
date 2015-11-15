@@ -1,15 +1,43 @@
 #!/usr/bin/env bash
-# Hack to get coveage report on all or only tests matching a shell glob
-# Usage: Either call with no args or with something like .util/coverage.sh auth*
+#
+#  I saw this at https://mlafeldt.github.io/blog/test-coverage-in-go/
+#  Credit to him for the parts that work. I don't use it verbatim so
+#  bad on me for parts that don't work
+set -e
 
-# Run tests with verbose output and optionally pass a fileglob to match
-go test -v -coverprofile=c.out "$@"
+workdir=.cover
+profile="$workdir/cover.out"
+mode=count
 
-# Hack to get the output file to work when using a fileglob
-sed -i.bak 's/command-line-arguments/github.com\/spohnan\/ci-bot-01/' c.out
+generate_cover_data() {
+    rm -rf "$workdir"
+    mkdir "$workdir"
 
-# Open in a browser
-go tool cover -html=c.out
+    for pkg in "$@"; do
+        f="$workdir/$(echo $pkg | tr / -).cover"
+        go test -covermode="$mode" -coverprofile="$f" "$pkg"
+    done
 
-# Clean up temp files
-rm -f c.out*
+    echo "mode: $mode" >"$profile"
+    grep -h -v "^mode:" "$workdir"/*.cover >>"$profile"
+}
+
+show_cover_report() {
+    go tool cover -${1}="$profile"
+}
+
+push_to_coveralls() {
+    echo "Pushing coverage statistics to coveralls.io"
+    goveralls -coverprofile="$profile"
+}
+
+generate_cover_data $(go list ./...)
+show_cover_report func
+case "$1" in
+"")
+    ;;
+--html)
+    show_cover_report html ;;
+*)
+    echo >&2 "error: invalid option: $1"; exit 1 ;;
+esac

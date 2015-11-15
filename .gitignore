@@ -26,3 +26,6 @@ _testmain.go
 
 # app.yaml may contain sensitive env vars
 app.yaml
+
+# Coverage temp files
+.cover/
