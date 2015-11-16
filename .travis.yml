@@ -8,7 +8,10 @@ go:
 install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
+  - go get github.com/google/go-github/github
+  - go get golang.org/x/oauth2
   - go get google.golang.org/appengine
+  - go get google.golang.org/appengine/log
 
 script:
   - .util/coverage.sh

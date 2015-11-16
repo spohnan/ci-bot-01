@@ -46,10 +46,10 @@ func TestEventTypeDetection(t *testing.T) {
 }
 
 // A helper function to retrieve the contents of test data files
-func getWebhookExample(filename string) string {
+func getWebhookExample(filename string) (contentBytes []byte) {
 	contentBytes, err := ioutil.ReadFile("./.hook-examples/" + filename)
 	if err != nil {
-		return ""
+		return
 	}
-	return string(contentBytes)
+	return
 }

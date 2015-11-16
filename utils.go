@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-func getBodyContent(r *http.Request) string {
+func getBodyContent(r *http.Request) []byte {
 	body := make([]byte, r.ContentLength)
 	r.Body.Read(body)
-	return string(body)
+	return body
 }
 
 func mapContainsKey(m map[string]interface{}, k string) bool {

@@ -4,8 +4,11 @@ package bot
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/google/go-github/github"
 )
 
+// WebHookType represents the subset of GitHub web hooks activities on which we wish to take action
 type WebHookType int
 
 const (
@@ -18,10 +21,13 @@ const (
 // type of webhook and then sends to the proper intenral handler
 func WebHookRouter(r *http.Request) {
 
-	webHookInfo := parseWebHookInfo(getBodyContent(r))
+	bodyContent := getBodyContent(r)
+	webHookInfo := parseWebHookInfo(bodyContent)
 
 	if isIssueAction(webHookInfo) {
-
+		var ievent github.IssueActivityEvent
+		json.Unmarshal(bodyContent, &ievent)
+		rejectIssue(r, ievent)
 	}
 }
 
@@ -37,9 +43,9 @@ func isPingAction(wh map[string]interface{}) bool {
 	return mapContainsKey(wh, "zen")
 }
 
-func parseWebHookInfo(content string) map[string]interface{} {
+func parseWebHookInfo(content []byte) map[string]interface{} {
 	var webhookJSON interface{}
-	err := json.Unmarshal([]byte(content), &webhookJSON)
+	err := json.Unmarshal(content, &webhookJSON)
 	if err != nil {
 		return nil
 	}
