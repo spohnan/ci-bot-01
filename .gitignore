@@ -24,6 +24,10 @@ _testmain.go
 *.prof
 *.out
 
+# IDE Files
+*.iml
+.idea/
+
 # app.yaml may contain sensitive env vars
 app.yaml
 
